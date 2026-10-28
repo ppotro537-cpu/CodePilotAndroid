@@ -12,6 +12,21 @@ jobs:
           distribution: 'temurin'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+      - name: Prepare project
+        run: |
+          ls -la
+          if ls CodePilotAndroid-source-*.zip 1> /dev/null 2>&1; then
+            unzip -o CodePilotAndroid-source-*.zip
+          fi
+          # Si el codigo esta en una subcarpeta, lo traemos a la raiz
+          if [ ! -d app ] && [ -d CodePilotAndroid/app ]; then
+            cp -r CodePilotAndroid/* .
+          fi
+          if [ ! -d app ] && ls -d */app 1> /dev/null 2>&1; then
+            cp -r */app .
+            cp -r */gradle* . 2>/dev/null || true
+          fi
+          ls -la
       - name: Build
         run: |
           chmod +x gradlew
