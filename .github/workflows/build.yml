@@ -1,0 +1,25 @@
+name: Build APK
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Unzip project
+        run: unzip -o CodePilotAndroid-source-v0.1.1.zip
+      - name: Grant permission
+        run: chmod +x CodePilotAndroid-source-v0.1.1/CodePilotAndroid/gradlew
+      - name: Build APK
+        working-directory: CodePilotAndroid-source-v0.1.1/CodePilotAndroid
+        run: ./gradlew assembleDebug
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: CodePilot-APK
+          path: CodePilotAndroid-source-v0.1.1/CodePilotAndroid/app/build/outputs/apk/debug/app-debug.apk
+          
