@@ -5,33 +5,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Java
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-      - name: Prepare project
+      - name: Sacar app del ZIP
         run: |
+          unzip -o CodePilotAndroid-source-v0.1.1-*.zip || unzip -o *.zip
           ls -la
-          if ls CodePilotAndroid-source-*.zip 1> /dev/null 2>&1; then
-            unzip -o CodePilotAndroid-source-*.zip
-          fi
-          # Si el codigo esta en una subcarpeta, lo traemos a la raiz
-          if [ ! -d app ] && [ -d CodePilotAndroid/app ]; then
-            cp -r CodePilotAndroid/* .
-          fi
-          if [ ! -d app ] && ls -d */app 1> /dev/null 2>&1; then
-            cp -r */app .
-            cp -r */gradle* . 2>/dev/null || true
-          fi
-          ls -la
-      - name: Build
+      - name: Compilar
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
-      - name: Upload APK
+          ./gradlew assembleDebug
+      - name: Subir APK
         uses: actions/upload-artifact@v4
         with:
           name: CodePilot-APK
